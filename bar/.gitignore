@@ -1,0 +1,5 @@
+lemonbar
+*.o
+*.swp
+*~
+config.h
