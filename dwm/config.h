@@ -69,6 +69,7 @@ static const Key keys[] = {
 	{ 0,                            XK_F4,     killclient,     {0} },
 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
 	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
+	{ MODKEY,                       XK_r,      swapfocus,     {0} },
 	{ MODKEY,                       XK_comma,  focusmon,       {.i = -1 } },
 	// { MODKEY,                       XK_Return, zoom,           {0} },
 	// { MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} },
