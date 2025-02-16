@@ -170,6 +170,7 @@ static void focusin(XEvent *e);
 static void focusmon(const Arg *arg);
 static void focusstack(const Arg *arg);
 static Atom getatomprop(Client *c, Atom prop);
+static Client *getpointerclient(void);
 static int getrootptr(int *x, int *y);
 static long getstate(Window w);
 static int gettextprop(Window w, Atom atom, char *text, unsigned int size);
@@ -586,8 +587,8 @@ configurenotify(XEvent *e)
 						resizeclient(c, m->mx, m->my, m->mw, m->mh, 0);
 				XMoveResizeWindow(dpy, m->barwin, m->wx, m->by, m->ww, bh);
 			}
-			focus(NULL);
 			arrange(NULL);
+      focus(NULL);
 		}
 	}
 }
@@ -794,6 +795,8 @@ void
 focus(Client *c)
 {
 	if (!c || !ISVISIBLE(c))
+		c = getpointerclient();
+	if (!c || !ISVISIBLE(c))
 		for (c = selmon->stack; c && !ISVISIBLE(c); c = c->snext);
 	if (selmon->sel && selmon->sel != c)
 		unfocus(selmon->sel, 0);
@@ -879,6 +882,16 @@ getatomprop(Client *c, Atom prop)
 		XFree(p);
 	}
 	return atom;
+}
+
+Client *
+getpointerclient(void)
+{
+	Window dummy, win;
+	int di;
+	unsigned int dui;
+	XQueryPointer(dpy, root, &dummy, &win, &di, &di, &di, &di, &dui);
+	return wintoclient(win);
 }
 
 int
@@ -1673,8 +1686,8 @@ tag(const Arg *arg)
 {
 	if (selmon->sel && arg->ui & TAGMASK) {
 		selmon->sel->tags = arg->ui & TAGMASK;
-		focus(NULL);
 		arrange(selmon);
+    focus(NULL);
 	}
 }
 
@@ -1760,8 +1773,8 @@ toggletag(const Arg *arg)
 	newtags = selmon->sel->tags ^ (arg->ui & TAGMASK);
 	if (newtags) {
 		selmon->sel->tags = newtags;
-		focus(NULL);
 		arrange(selmon);
+    focus(NULL);
 	}
 }
 
@@ -1772,8 +1785,8 @@ toggleview(const Arg *arg)
 
 	if (newtagset) {
 		selmon->tagset[selmon->seltags] = newtagset;
+    arrange(selmon);
 		focus(NULL);
-		arrange(selmon);
 	}
 }
 
@@ -1811,9 +1824,9 @@ unmanage(Client *c, int destroyed)
 		XUngrabServer(dpy);
 	}
 	free(c);
-	focus(NULL);
 	updateclientlist();
 	arrange(m);
+	focus(NULL);
 }
 
 void
@@ -2075,8 +2088,8 @@ view(const Arg *arg)
 	selmon->seltags ^= 1; /* toggle sel tagset */
 	if (arg->ui & TAGMASK)
 		selmon->tagset[selmon->seltags] = arg->ui & TAGMASK;
-	focus(NULL);
 	arrange(selmon);
+  focus(NULL);
 }
 
 Client *
